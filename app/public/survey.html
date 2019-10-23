@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Friend Finder Survey</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <!-- Jquery -->
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <!-- Bootstrap -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1><img src="http://images.clipartpanda.com/preparation-clipart-exam.png" style="width: 10rem"></span> Take
+                our "Friendly" Survey!</h1>
+        </div>
+
+        <div class="card">
+
+            <div class="card-header">
+                <h3 class="card-title"><strong>Your Information</strong></h3>
+            </div>
+
+            <div class="card-body">
+                <h4>Name</h4>
+                <div class="input-group">
+            <!-- Form -->
+                    <input id="formName" class="form-control" placeholder="Required" type="text" name="name">
+                </div>
+                <br>
+                <h4>Link to a Photo Image</h4>
+                <div class="input-group">
+
+                    <input id="formImage" class="form-control" placeholder="Required" type="text" name="name">
+                </div>
+            </div>
+
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title"><strong>Tell us about yourself-</strong></h3>
+            </div>
+            <div class="card-body" style="margin-left:2rem">
+
+                <h4><strong>#1</strong></h4>
+                <h5>Do you like to read?</h5>
+                <select data-placeholder="" class="select" id="Q1">
+                    <option value=""></option>
+                    <option value="1">1 Yes</option>
+                    <option value="2">2 No</option>
+                    <option value="3">3 Not Sure</option>
+                </select>
+
+                <h4><strong>#2</strong></h4>
+                <h5>Do you like to watch movies?</h5>
+                <select data-placeholder="" class="select" id="Q2">
+                    <option value=""></option>
+                    <option value="1">1 Yes</option>
+                    <option value="2">2 No</option>
+                    <option value="3">3 Not Sure</option>
+                </select>
+
+
+                <h4><strong>#3</strong></h4>
+                <h5>Do you like hiking?</h5>
+                <select data-placeholder="" class="select" id="Q3">
+                    <option value=""></option>
+                    <option value="1">1 Yes</option>
+                    <option value="2">2 No</option>
+                    <option value="3">3 Not Sure</option>
+                </select>
+
+
+                <h4><strong>#4</strong></h4>
+                <h5>Do you like to stay in on the weeknds?</h5>
+                <select data-placeholder="" class="select" id="Q4">
+                    <option value=""></option>
+                    <option value="1">1 Yes</option>
+                    <option value="2">2 No</option>
+                    <option value="3">3 Not Sure</option>
+                </select>
+
+
+                <h4><strong>#5</strong></h4>
+                <h5>Do you like to cook?</h5>
+                <select data-placeholder="" class="select" id="Q5">
+                    <option value=""></option>
+                    <option value="1">1 Yes</option>
+                    <option value="2">2 No</option>
+                    <option value="3">3 Not Sure</option>
+                </select>
+
+            </div>
+        </div>
+        <br>
+
+
+
+        <button id="submitButton" type="submit" class="btn btn-md btn-warning">
+            <h4>So who's my new friend?</h4>
+        </button>
+
+        <br>
+        <br>
+
+
+        <footer class="footer">
+            <div class="container">
+                <p><a href="/api/friends">API Friends List</a> | <a
+                        href="https://github.com/itsgoodtobegrant/friendfinder">GitHub Repo</a></p>
+            </div>
+        </footer>
+
+
+        <div id="resultsModal" class="modal fade" role="dialog">
+
+            <div class="modal-dialog">
+
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                        <h2 class="modal-title"><strong>Did we just become friends?!</strong></h2>
+                    </div>
+
+
+                    <div class="modal-body">
+
+                        <h2 id="matchName"></h2>
+                        <img id="matchImg" src="" alt="Image Not Found" style="max-width: 350px;">
+                    </div>
+
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#submitButton").on("click", function () {
+
+                function newForm() {
+
+                    var completeForm = true;
+                    $(".form-control").each(function () {
+                        if ($(this).val() === "") {
+                            completeForm = false;
+                        }
+                    });
+                    $(".select").each(function () {
+                        if ($(this).val() === "") {
+                            completeForm = false;
+                        }
+                    });
+                    return completeForm;
+                }
+
+                if (newForm() == true) {
+
+                    var newFriend = {
+                        name: $("#formName").val().trim(),
+                        profilePic: $("#formImage").val().trim(),
+                        scores: [
+                            $('#Q1').val(),
+                            $('#Q2').val(),
+                            $('#Q3').val(),
+                            $('#Q4').val(),
+                            $('#Q5').val(),
+                        ]
+                    };
+
+                    var currentURL = window.location.origin;
+
+                    $.post(currentURL + "/api/friends", newFriend, function (data) {
+
+                        $("#matchName").text(data.name);
+                        $("#matchImg").attr("src", data.photo);
+                        $("#resultsModal").modal("toggle");
+                    });
+
+                    $('#formName').val("");
+                    $('#formImage').val("");
+                    $('#Q1').val("");
+                    $('#Q2').val("");
+                    $('#Q3').val("");
+                    $('#Q4').val("");
+                    $('#Q5').val("");
+
+                } else {
+                    alert("Go back--You forgot one!")
+                }
+
+            });
+        });
+    </script>
+
+
+
+
+</body>
+
+</html>
